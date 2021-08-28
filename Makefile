@@ -43,7 +43,7 @@ compile_commands.json: $(COMPDB_ENTRIES)
 	@echo "    }" >> $@
 	@echo "]" >> $@
 	@rm $@.tmp
-
+	@rm $^
 
 # Create build directory only if it doesn't exits.
 dir:
@@ -53,15 +53,15 @@ dir:
 build: dir all compile_commands.json
 
 all: $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o build/out.o
-	avr-size --mcu=$(uP) -C build/out.o
+	$(CC) $(CFLAGS) $^ -o build/a.out
+	avr-size --mcu=$(uP) -C build/a.out
 
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) $(CFLAGS) -I$(SRC) -c -g $< -o $@
 
 flash: build
-	avr-size --mcu=$(uP) -C build/out.o
-	avr-objcopy -O ihex --strip-debug -R .eeprom build/out.o build/out.hex
+	avr-size --mcu=$(uP) -C build/a.out
+	avr-objcopy -O ihex --strip-debug -R .eeprom build/a.out build/out.hex
 	avrdude -c $(FRAMEWORK) \
 		-p $(uP) \
 		-D -P $(SERIAL) \
