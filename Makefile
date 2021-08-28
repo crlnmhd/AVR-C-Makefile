@@ -23,6 +23,7 @@ AVRINC :=/usr/avr/include
 CFLAGS := -Wall -pedantic -Wextra -Wstrict-prototypes -fshort-enums -std=gnu17 -mmcu=$(uP) -Wno-unknown-attributes -I$(AVRINC) -DF_CPU=$(CPU_FREQ) -flto -Os -DBAUD=$(BAUD) -g
 RAMEWORK := wiring		# Use 'arduino' for arduino uno
 
+AVR_GDB := /home/cgn/prog/external/avr-gdb/avr-gdb-8.3/bin/avr-gdb
 .PHONY: %.compdb_entry compile_commands.json dir all
 
 # Borrowed from https://gist.github.com/JayKickliter/f4e1945abe1d3bbbe3263640a3669e3c.
@@ -73,3 +74,9 @@ clean:
 		fi
 	@rm -f src/*.compbd_entry
 	@echo "cleaning..."
+
+sim:
+	simavr -g -m $(uP) build/simplos.out
+
+debug:
+	$(AVR_GDB) build/simplos.out -ex "target remote :1234" -ex "directory src/"
