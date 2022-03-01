@@ -13,8 +13,10 @@ SERIAL := /dev/ttyUSB0
 SRC := src
 OBJ := build
 
-SOURCES := $(wildcard $(SRC)/*.c)
-OBJECTS := $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SOURCES))
+EXTENCION:=c
+
+SOURCES := $(wildcard $(SRC)/*.$(EXTENCION))
+OBJECTS := $(patsubst $(SRC)/%.$(EXTENCION), $(OBJ)/%.o, $(SOURCES))
 
 
 .DEFAULT_GOAL := build
@@ -27,7 +29,7 @@ AVR_GDB := /home/cgn/prog/external/avr-gdb/avr-gdb-8.3/bin/avr-gdb
 .PHONY: %.compdb_entry compile_commands.json dir all
 
 # Borrowed from https://gist.github.com/JayKickliter/f4e1945abe1d3bbbe3263640a3669e3c.
-%.compdb_entry: %.c
+%.compdb_entry: %.$(EXTENCION)
 	@echo "    {" > $@
 	@echo "        \"command\": \"$(CC)  $(CFLAGS) $(CPPFLAGS) -c $<\","   >> $@
 	@echo "        \"directory\": \"$(CURDIR)\","               >> $@
@@ -56,7 +58,7 @@ all: $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o build/a.out
 	avr-size --mcu=$(uP) -C build/a.out
 
-$(OBJ)/%.o: $(SRC)/%.c
+$(OBJ)/%.o: $(SRC)/%.$(EXTENCION)
 	$(CC) $(CFLAGS) -I$(SRC) -c -g $< -o $@
 
 flash: build
